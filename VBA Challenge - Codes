@@ -1,0 +1,81 @@
+Sub Stock_Stats()
+
+Dim ws As Worksheet
+
+For Each ws In Worksheets
+
+    ws.[I1] = "Ticker"
+    ws.[J1] = "Yearly Change"
+    ws.[K1] = "Percentage Change"
+    ws.[L1] = "Volume"
+    
+    ws.Range("K:K").NumberFormat = "0.00%"
+
+Dim Ticker As String
+
+Dim Total_Stock_Volume As LongLong
+Total_Stock_Volume = 0
+
+Dim Summary_Table_Row As LongLong
+Summary_Table_Row = 2
+
+Dim EndRow As LongLong
+
+EndRow = ws.Range("G1").CurrentRegion.Rows.Count
+
+Open_Rev = 0
+
+Change = 0
+
+For i = 2 To EndRow
+
+    If Open_Rev = 0 Then
+    
+        Open_Rev = ws.Cells(i, "C")
+    
+    End If
+    
+
+    If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+    
+        Change = (ws.Cells(i, "F").Value - Open_Rev)
+        
+        PercentChange = Change / ws.Cells(i, "F")
+        
+        ws.Cells(Summary_Table_Row, "J") = Change
+        
+        ws.Cells(Summary_Table_Row, "K") = PercentChange
+        
+        If PercentChange <= 0 Then
+        
+            ws.Cells(Summary_Table_Row, "K").Interior.ColorIndex = 3
+            
+            Else: ws.Cells(Summary_Table_Row, "K").Interior.ColorIndex = 4
+        
+        End If
+        
+        Ticker = ws.Cells(i, 1).Value
+        
+        Total_Stock_Volume = Total_Stock_Volume + ws.Cells(i, 7).Value
+        
+        ws.Range("I" & Summary_Table_Row).Value = Ticker
+        
+        ws.Range("L" & Summary_Table_Row).Value = Total_Stock_Volume
+        
+        Summary_Table_Row = Summary_Table_Row + 1
+        
+        Total_Stock_Volume = 0
+        
+        Open_Rev = 0
+        
+    Else
+    
+        Total_Stock_Volume = Total_Stock_Volume + Cells(i, 7).Value
+        
+    End If
+     
+Next i
+
+Next ws
+
+End Sub
